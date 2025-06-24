@@ -76,6 +76,8 @@ def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", vid_style
     match vid_type:
         case "YouTube":
             filter_complex = "[0:v]scale=1920:1080[v]"
+        case "TikTok":
+            filter_complex = "[0:v]scale=1080:1920[v]"
         case _:
             filter_complex = "[0:v]scale=1080:1080[v]"
 
