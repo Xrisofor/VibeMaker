@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 ProVideo Editor</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo-container">
+            <i class="fas fa-film logo-icon"></i>
+            <h1 class="logo-text">ProVideo Editor</h1>
+        </div>
+        <div class="header-controls">
+            <button id="theme-toggle" class="theme-btn">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="help-btn">
+                <i class="fas fa-question-circle"></i> Помощь
+            </button>
+        </div>
+    </header>
+    
+    <div class="editor-container">
+        <div class="settings-panel">
+            <div class="settings-header">
+                <h2><i class="fas fa-sliders-h"></i> Настройки видео</h2>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-title">
+                    <i class="fas fa-film"></i> Основные параметры
+                </div>
+                <table class="settings-table">
+                    <tr>
+                        <td>Тип видео:</td>
+                        <td>
+                            <select id="video-type" class="settings-select">
+                                <option value="YouTube">YouTube (1920×1080)</option>
+                                <option value="Instagram">Instagram (1080×1080)</option>
+                                <option value="TikTok">TikTok (1080×1920)</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Стиль оформления:</td>
+                        <td>
+                            <select id="video-style" class="settings-select">
+                                <option value="black">Черные полосы</option>
+                                <option value="blur">Размытие по краям</option>
+                                <option value="color">Цветная рамка</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Название видео:</td>
+                        <td>
+                            <input type="text" id="video-name" class="settings-input" placeholder="Мое видео">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-title">
+                    <i class="fas fa-adjust"></i> Коррекции
+                </div>
+                <div class="adjustment-control">
+                    <label>Яркость</label>
+                    <input type="range" min="0" max="200" value="100" class="settings-range">
+                </div>
+                <div class="adjustment-control">
+                    <label>Контраст</label>
+                    <input type="range" min="0" max="200" value="100" class="settings-range">
+                </div>
+                <div class="adjustment-control">
+                    <label>Насыщенность</label>
+                    <input type="range" min="0" max="200" value="100" class="settings-range">
+                </div>
+            </div>
+
+            <div class="settings-group" id="mods-group">
+                <div class="settings-title">
+                    <i class="fas fa-puzzle-piece"></i> Эффекты
+                </div>
+                <div id="mods-container">
+                    <p>Загрузка эффектов...</p>
+                </div>
+            </div>
+            
+            <button id="generate-btn" class="generate-btn">
+                <i class="fas fa-play-circle"></i> Сгенерировать видео
+            </button>
+        </div>
+        
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h3><i class="fas fa-eye"></i> Предпросмотр</h3>
+                <div class="preview-controls">
+                    <button id="fullscreen-btn" class="preview-btn"><i class="fas fa-expand"></i></button>
+                    <button id="refresh-btn" class="preview-btn"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+            
+            <div class="preview-container" id="preview-container">
+                <div class="preview-placeholder">
+                    <i class="fas fa-image"></i>
+                    <p>Превью видео появится здесь</p>
+                </div>
+                <!-- <div class="preview-overlay">
+                    <div class="preview-info">YouTube (1920×1080)</div>
+                </div> -->
+            </div>
+            
+            <div class="file-uploaders">
+                <div class="upload-card" id="image-upload">
+                    <div class="upload-header">
+                        <i class="fas fa-image"></i>
+                        <h3>Изображение</h3>
+                    </div>
+                    <div class="upload-body">
+                        <p class="file-info" id="image-info">Файл не выбран</p>
+                        <button class="upload-btn" id="select-image">
+                            <i class="fas fa-upload"></i> Загрузить
+                        </button>
+                        <input type="file" id="image-input" accept="image/*">
+                    </div>
+                    <div class="upload-footer">
+                        <p>Поддерживаемые форматы: JPG, PNG (мин. 1080px)</p>
+                    </div>
+                </div>
+                
+                <div class="upload-card" id="audio-upload">
+                    <div class="upload-header">
+                        <i class="fas fa-music"></i>
+                        <h3>Аудио</h3>
+                    </div>
+                    <div class="upload-body">
+                        <p class="file-info" id="audio-info">Файл не выбран</p>
+                        <button class="upload-btn" id="select-audio">
+                            <i class="fas fa-upload"></i> Загрузить
+                        </button>
+                        <input type="file" id="audio-input" accept="audio/*">
+                    </div>
+                    <div class="upload-footer">
+                        <p>Поддерживаемые форматы: MP3, WAV</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history-section">
+                <div class="history-header">
+                    <h3><i class="fas fa-history"></i> История генераций</h3>
+                    <button id="clear-history" class="clear-history-btn">
+                        <i class="fas fa-trash"></i> Очистить
+                    </button>
+                </div>
+                
+                <div class="history-list" id="history-list">
+                    {% for video in videos %}
+                    <div class="history-item" data-path="{{ video.path }}">
+                        <div class="video-info">
+                            <div class="video-name">{{ video.name }}</div>
+                            <div class="video-date">{{ video.date }}</div>
+                            <div class="video-path">{{ video.path }}</div>
+                        </div>
+                        <div class="video-actions">
+                            {% if video.exists %}
+                            <button class="action-btn download-btn" title="Скачать">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            {% endif %}
+                            <button class="action-btn delete-btn" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-history">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Нет сохраненных видео</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-area"></div>
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mods.js') }}"></script>
+</body>
+</html>
