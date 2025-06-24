@@ -1,6 +1,6 @@
 import os, uuid, json, mod
 from flask import Flask, request, jsonify, send_from_directory, render_template
-from video_gen import generate_video
+from video_gen import generate_video, crop_and_resize
 from datetime import datetime
 
 app = Flask(__name__)
@@ -90,9 +90,43 @@ def generate():
     except Exception as e:
         return jsonify({"error": f"Ошибка генерации видео: {str(e)}"}), 500
 
+@app.route("/preview", methods=['POST'])
+def preview():
+    import io, base64
+    from PIL import Image
+
+    data = request.json
+    img_path = data.get('image_path')
+    vid_type = data.get('video_type', 'YouTube')
+    mods_cfg = data.get('mods', None)
+
+    # print(vid_type)
+
+    if not os.path.exists(img_path):
+        return jsonify({
+            "error": "Изображение не найдено"
+        }), 400
+    
+    try:
+        main_img = crop_and_resize(img_path)
+
+        with Image.open(main_img) as img:
+            img = mod.apply_mods(img, mods_cfg)
+
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG")
+            encoded = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+            return jsonify({
+                "preview": f"data:image/jpeg;base64,{encoded}"
+            })
+    except Exception as e:
+        return jsonify({
+            "error": f"Ошибка генерации предпросмотра: {str(e)}"
+        }), 500
+
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    file_type = request.form.get("type")
     file = request.files.get("file")
 
     if not file:
@@ -129,38 +163,6 @@ def upload_file():
         return jsonify({
             "error": f"Ошибка загрузки файла: {str(e)}"
         }), 500
-
-@app.route("/preview", methods=['POST'])
-def preview():
-    import io, base64
-    from PIL import Image, ImageFilter, ImageEnhance
-
-    data = request.json
-    img_path = data.get('image_path')
-    mods_cfg = data.get('mods', None)
-
-    if not os.path.exists(img_path):
-        return jsonify({
-            "error": "Изображение не найдено"
-        }), 400
-    
-    try:
-        with Image.open(img_path) as img:
-            img = mod.apply_mods(img, mods_cfg)
-
-            buf = io.BytesIO()
-            img.save(buf, format="JPEG")
-            encoded = base64.b64encode(buf.getvalue()).decode("utf-8")
-
-            return jsonify({
-                "preview": f"data:image/jpeg;base64,{encoded}"
-            })
-    except Exception as e:
-        return jsonify({
-            "error": f"Ошибка генерации предпросмотра: {str(e)}"
-        }), 500
-
-    #vid_type = data.get('video_type', 'YouTube')
 
 @app.route('/clear-history', methods=['POST'])
 def clear_history():

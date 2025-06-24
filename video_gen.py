@@ -1,9 +1,12 @@
 import os, subprocess, json, mod, uuid
 from PIL import Image, ImageFilter, ImageEnhance
 
-FFMPEG_PATH = r'C:\Users\arabo\Documents\YumiStarlight\ffmpeg\ffmpeg.exe'
-FFPROBE_PATH = r'C:\Users\arabo\Documents\YumiStarlight\ffmpeg\ffprobe.exe'
-TEMP_DIR = "temp"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TEMP_DIR = os.path.join(BASE_DIR, "temp")
+
+FFMPEG_PATH = os.path.join(BASE_DIR, "ffmpeg", "ffmpeg.exe")
+FFPROBE_PATH = os.path.join(BASE_DIR, "ffmpeg", "ffprobe.exe")
+
 os.makedirs(TEMP_DIR, exist_ok=True)
 
 def crop_and_resize(img_path, size=(1080, 1080)):

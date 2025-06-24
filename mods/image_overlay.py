@@ -5,8 +5,8 @@ metadata = {
     "label": "Наложение изображения",
     "params": [
         {"name": "overlay_path", "type": "file", "label": "Загрузить изображение", "default": ""},
-        {"name": "x", "type": "slider", "label": "X", "min": 0, "max": 1080, "default": 40},
-        {"name": "y", "type": "slider", "label": "Y", "min": 0, "max": 1080, "default": 40},
+        {"name": "x", "type": "slider", "label": "X", "min": 0, "max": 1080, "default": 0},
+        {"name": "y", "type": "slider", "label": "Y", "min": 0, "max": 1080, "default": 0},
         {"name": "scale", "type": "slider", "label": "Масштаб (%)", "min": 10, "max": 200, "default": 100}
     ]
 }
@@ -24,7 +24,7 @@ def apply(image: Image.Image, overlay_path="", x=40, y=40, scale=100) -> Image.I
     scale_factor = scale / 100
     new_width = int(overlay.width * scale_factor)
     new_height = int(overlay.height * scale_factor)
-    overlay = overlay.resize((new_width, new_height), Image.ANTIALIAS)
+    overlay = overlay.resize((new_width, new_height), Image.LANCZOS)
 
     base = image.convert("RGBA")
     base.paste(overlay, (x, y), overlay)

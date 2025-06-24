@@ -148,12 +148,18 @@ function collectMods() {
         const params = {};
         block.querySelectorAll("input").forEach(input => {
             const paramName = input.id.replace(`mod-${modName}-`, "");
-            let value = input.value;
 
-            // Попробуем преобразовать в число, если это возможно
-            if (!isNaN(value) && value.trim() !== "") {
-                // Если число целое, преобразуем в int, иначе в float
-                value = value.includes('.') ? parseFloat(value) : parseInt(value, 10);
+            let value;
+            if (input.type === "file") {
+                // Для file input берем путь из data-upload-path (если есть)
+                value = input.getAttribute('data-upload-path') || "";
+            } else {
+                value = input.value;
+
+                // Попытка привести к числу если возможно
+                if (!isNaN(value) && value.trim() !== "") {
+                    value = value.includes('.') ? parseFloat(value) : parseInt(value, 10);
+                }
             }
 
             params[paramName] = value;
