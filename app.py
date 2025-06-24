@@ -76,7 +76,7 @@ def generate():
         video_data = {
             "name": f"{video_name}.mp4",
             "date": date_str,
-            "path": output_path,
+            "path": f"{video_name}.mp4",
             "exists": True
         }
         
