@@ -68,6 +68,7 @@ def generate():
             data['audio'],
             output_path,
             data['video_type'],
+            data['video_style'],
             mods_cfg
         )
         
@@ -94,13 +95,13 @@ def generate():
 def preview():
     import io, base64
     from PIL import Image
+    from style import apply_style
 
     data = request.json
     img_path = data.get('image_path')
     vid_type = data.get('video_type', 'YouTube')
+    vid_style = data.get('video_style', 'black')
     mods_cfg = data.get('mods', None)
-
-    # print(vid_type)
 
     if not os.path.exists(img_path):
         return jsonify({
@@ -112,6 +113,10 @@ def preview():
 
         with Image.open(main_img) as img:
             img = mod.apply_mods(img, mods_cfg)
+
+            img = apply_style(
+                img, vid_type, vid_style
+            )
 
             buf = io.BytesIO()
             img.save(buf, format="JPEG")

@@ -1,5 +1,6 @@
 import os, subprocess, json, mod, uuid
 from PIL import Image, ImageFilter, ImageEnhance
+from style import apply_style
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEMP_DIR = os.path.join(BASE_DIR, "temp")
@@ -57,7 +58,7 @@ def create_blur_bg(img_path):
         bg.save(path)
         return path
     
-def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", mods_cfg = None):
+def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", vid_style = "black", mods_cfg = None):
     main_img = crop_and_resize(img_path)
     duration = get_audio_duration(aud_path)
 
@@ -65,12 +66,16 @@ def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", mods_cfg 
         if mods_cfg:
             img = mod.apply_mods(img, mods_cfg)
 
+        img = apply_style(
+            img, vid_type, vid_style
+        )
+
         processed_path = os.path.join(TEMP_DIR, f"processed_{uuid.uuid4().hex}.jpg")
         img.save(processed_path)
 
     match vid_type:
         case "YouTube":
-            filter_complex = "[0:v]scale=1080:1080,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=black[v]"
+            filter_complex = "[0:v]scale=1920:1080[v]"
         case _:
             filter_complex = "[0:v]scale=1080:1080[v]"
 
@@ -84,6 +89,7 @@ def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", mods_cfg 
         '-map', '1:a',
         '-t', str(duration),
         '-c:v', 'libx264',
+        '-b:v', "5M",
         '-c:a', 'aac',
         '-pix_fmt', 'yuv420p',
         '-shortest',
