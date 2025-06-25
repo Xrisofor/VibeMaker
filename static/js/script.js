@@ -1,5 +1,3 @@
-// --- ВНЕ DOMContentLoaded: все функции и переменные ---
-
 const UI = {};
 let selectedImage = null;
 let selectedAudio = null;
@@ -36,6 +34,11 @@ function handleFileUpload(e, type, callback) {
             } else if (type === 'audio') {
                 selectedAudio = data.path;
                 UI.audioInfo.textContent = data.original_name;
+
+                if (!UI.videoName.value.trim()) {
+                    const baseName = data.original_name.replace(/\.[^/.]+$/, '');
+                    UI.videoName.value = baseName;
+                }
             }
         })
         .catch(() => {
@@ -105,52 +108,6 @@ function generateVideo() {
     .finally(() => toggleGenerateBtn(false));
 }
 
-function clearHistory() {
-    if (!confirm('Вы уверены, что хотите очистить всю историю видео?')) return;
-    fetch('/clear-history', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                notify(data.message);
-                UI.historyList.innerHTML = placeholder('Нет сохраненных видео', 'info-circle');
-            }
-        })
-        .catch(() => notify('Ошибка очистки истории', 'error'));
-}
-
-function handleHistoryClick(e) {
-    const btn = e.target.closest('.download-btn, .delete-btn');
-    if (!btn) return;
-
-    const item = btn.closest('.history-item');
-    const path = item?.dataset.path;
-
-    if (btn.classList.contains('download-btn')) {
-        window.location.href = `/output/${path.split('/').pop()}`;
-    }
-
-    if (btn.classList.contains('delete-btn') && confirm('Удалить это видео?')) {
-        fetch('/delete-video', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ path })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    notify(data.message);
-                    item.remove();
-                    if (!UI.historyList.querySelector('.history-item')) {
-                        UI.historyList.innerHTML = placeholder('Нет сохраненных видео', 'info-circle');
-                    }
-                } else {
-                    notify(data.error || 'Ошибка удаления', 'error');
-                }
-            })
-            .catch(() => notify('Ошибка удаления видео', 'error'));
-    }
-}
-
 function notify(msg, type = 'success') {
     const div = document.createElement('div');
     div.className = `notification ${type}`;
@@ -181,18 +138,11 @@ function toggleGenerateBtn(loading) {
         : '<i class="fas fa-play-circle"></i> Сгенерировать видео';
 }
 
-// Здесь добавь остальные функции, например collectMods() и другие, если они есть
-
-
-// --- В DOMContentLoaded только инициализация и назначение обработчиков ---
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Запишем ссылки на элементы UI
     UI.videoType = $('video-type');
     UI.videoStyle = $('video-style');
     UI.videoName = $('video-name');
     UI.folderPath = $('folder-path');
-    UI.selectFolder = $('select-folder');
     UI.generateBtn = $('generate-btn');
     UI.preview = $('preview-container');
     UI.imageUploadBtn = $('select-image');
@@ -201,11 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     UI.audioInput = $('audio-input');
     UI.imageInfo = $('image-info');
     UI.audioInfo = $('audio-info');
-    UI.clearHistory = $('clear-history');
-    UI.historyList = $('history-list');
     UI.notifyArea = $('notification-area');
 
-    // Тема и переключатель
     const themeToggleBtn = $('theme-toggle');
     const root = document.documentElement;
 
@@ -227,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     applyTheme(localStorage.getItem('theme') || 'light');
 
-    // Кнопки полноэкранного режима и обновления превью
     const fullscreenBtn = $('fullscreen-btn');
     const refreshBtn = $('refresh-btn');
 
@@ -243,19 +189,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     refreshBtn.addEventListener('click', updatePreview);
 
-    // Назначаем обработчики UI
     UI.videoType.onchange = UI.videoStyle.onchange = updatePreview;
     UI.imageUploadBtn.onclick = () => UI.imageInput.click();
     UI.audioUploadBtn.onclick = () => UI.audioInput.click();
 
-    UI.selectFolder?.addEventListener('click', () => {
-        UI.folderPath.value = 'output';
-        notify('Папка сохранения изменена');
-    });
-
     UI.generateBtn.onclick = generateVideo;
-    UI.clearHistory.onclick = clearHistory;
-    UI.historyList.addEventListener('click', handleHistoryClick);
 
     UI.imageInput.onchange = e => handleFileUpload(e, 'image');
     UI.audioInput.onchange = e => handleFileUpload(e, 'audio');

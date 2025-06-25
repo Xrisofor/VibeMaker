@@ -1,5 +1,4 @@
 :root {
-    /* Light Theme */
     --primary-color: #4361ee;
     --secondary-color: #3f37c9;
     --accent-color: #4895ef;
@@ -45,11 +44,53 @@
     transition: background-color 0.3s, border-color 0.3s;
 }
 
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--panel-bg);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 5px;
+    border: 2px solid var(--panel-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-light);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--panel-bg);
+}
+
 body {
     background-color: var(--bg-color);
     color: var(--text-color);
     height: 100vh;
     overflow: hidden;
+}
+
+.settings-panel, .preview-panel, .mod-block {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) var(--panel-bg);
+}
+
+.settings-panel::-webkit-scrollbar-thumb,
+.preview-panel::-webkit-scrollbar-thumb,
+.mod-block::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+}
+
+.settings-panel::-webkit-scrollbar-thumb:hover,
+.preview-panel::-webkit-scrollbar-thumb:hover,
+.mod-block::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
 }
 
 .app-header {
@@ -119,9 +160,9 @@ body {
 .editor-container {
     display: flex;
     height: calc(100vh - 60px);
+    min-height: 0;
 }
 
-/* Левая панель - настройки */
 .settings-panel {
     width: 420px;
     background-color: var(--panel-bg);
@@ -248,7 +289,6 @@ body {
     cursor: pointer;
 }
 
-/* Стили для модов */
 .mod-block {
     background: var(--panel-bg);
     border-radius: 8px;
@@ -303,7 +343,6 @@ body {
     color: var(--text-light);
 }
 
-/* Стили для файловых инпутов в модах */
 .mod-file-upload {
     display: flex;
     flex-direction: column;
@@ -348,13 +387,11 @@ body {
     color: var(--primary-color);
 }
 
-/* Иконка для загруженного файла */
 .mod-file-icon {
     margin-right: 5px;
     color: var(--success-color);
 }
 
-/* Стиль для отображения имени файла */
 .mod-file-name {
     font-size: 0.85rem;
     color: var(--text-color);
@@ -390,7 +427,6 @@ body {
     box-shadow: 0 6px 10px rgba(67, 97, 238, 0.4);
 }
 
-/* Правая панель - предпросмотр и файлы */
 .preview-panel {
     flex: 1;
     display: flex;
@@ -398,6 +434,7 @@ body {
     overflow: hidden;
     background-color: var(--bg-color);
     padding: 20px;
+    min-height: 0;
 }
 
 .preview-header {
@@ -561,111 +598,6 @@ body {
     display: none;
 }
 
-/* История генераций */
-.history-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: var(--card-bg);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-}
-
-.history-header {
-    padding: 18px;
-    background: var(--panel-bg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.history-header h3 {
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.clear-history-btn {
-    padding: 8px 15px;
-    background: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    color: var(--text-color);
-    cursor: pointer;
-    font-size: 0.95rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s;
-}
-
-.clear-history-btn:hover {
-    background: var(--danger-color);
-    color: white;
-    border-color: var(--danger-color);
-}
-
-.history-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.history-item {
-    background-color: var(--panel-bg);
-    border-radius: 8px;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s;
-}
-
-.history-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.video-info {
-    flex: 1;
-    overflow: hidden;
-}
-
-.video-name {
-    font-weight: 600;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.video-date {
-    font-size: 0.85rem;
-    color: var(--text-light);
-    margin-bottom: 3px;
-}
-
-.video-path {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.video-actions {
-    display: flex;
-    gap: 10px;
-}
-
 .action-btn {
     width: 34px;
     height: 34px;
@@ -711,7 +643,6 @@ body {
     opacity: 0.5;
 }
 
-/* Уведомления */
 #notification-area {
     position: fixed;
     top: 20px;
@@ -760,7 +691,6 @@ body {
     to { opacity: 0; }
 }
 
-/* Адаптивность */
 @media (max-width: 1200px) {
     .settings-panel {
         width: 380px;
@@ -775,22 +705,22 @@ body {
     .editor-container {
         flex-direction: column;
         height: auto;
-        overflow-y: auto;
+        min-height: calc(100vh - 60px);
     }
     
     .settings-panel {
         width: 100%;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
         max-height: 50vh;
+        overflow-y: auto;
     }
     
     .file-uploaders {
         flex-direction: column;
     }
     
-    .preview-container {
-        height: 400px;
+    .preview-panel {
+        flex: 1;
+        min-height: 50vh;
     }
 }
 
@@ -803,7 +733,11 @@ body {
     }
     
     .preview-container {
-        height: 350px;
+        height: 300px;
+    }
+
+    .history-section {
+        min-height: 300px;
     }
     
     .history-item {

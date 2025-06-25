@@ -8,44 +8,34 @@ app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output")
-CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
+TEMP_DIR = os.path.join(BASE_DIR, "temp")
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_DIR
 app.config['OUTPUT_FOLDER'] = OUTPUT_DIR
-app.config['CONFIG_FILE'] = CONFIG_FILE
+app.config["TEMP_FOLDER"] = TEMP_DIR
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(TEMP_DIR, exist_ok=True)
 
-def load_cfg():
-    cfg_path = app.config["CONFIG_FILE"]
-    if os.path.exists(cfg_path):
+def clear_dir(dir):
+    for f in os.listdir(dir):
         try:
-            with open(cfg_path, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
-            return { "videos": [] }   
-        
-    return { "videos": [] }    
-
-def save_cfg(data):
-    with open(app.config["CONFIG_FILE"], "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+            os.remove(os.path.join(dir, f))
+        except Exception as e:
+            print(f"Ошибка удаление файла {f}: {e}")
 
 @app.route("/")
 def index():
-    cfg = load_cfg()
+    clear_dir(app.config["TEMP_FOLDER"])
+    clear_dir(app.config["UPLOAD_FOLDER"])
 
-    return render_template(
-        "index.html",
-        videos=cfg.get("videos", [])
-    )
+    return render_template("index.html")
 
 @app.route('/generate', methods=['POST'])
 def generate():
     data = request.json
-    cfg = load_cfg()
 
     if not all(key in data for key in ['image', 'audio', 'video_name', 'video_type', 'video_style']):
         return jsonify({
@@ -79,9 +69,6 @@ def generate():
             "path": f"{video_name}.mp4",
             "exists": True
         }
-        
-        cfg['videos'].insert(0, video_data)
-        save_cfg(cfg)
         
         return jsonify({
             "success": True,
@@ -133,6 +120,7 @@ def preview():
 @app.route("/upload", methods=["POST"])
 def upload_file():
     file = request.files.get("file")
+    type = request.form.get("type")
 
     if not file:
         return jsonify({
@@ -146,16 +134,16 @@ def upload_file():
     try:
         file.save(file_path)
 
-        if file_path == "image":
+        if type == "image":
             from PIL import Image
             with Image.open(file_path) as img:
                 _, h = img.size
 
-                if h < 1080:
-                    os.remove(file_path)
-                    return jsonify({
-                        "error": "Высота изображения должна быть не менее 1080px"
-                    }), 400
+            if h < 1080:
+                os.remove(file_path)
+                return jsonify({
+                    "error": "Высота изображения должна быть не менее 1080px"
+                }), 400
                 
         return jsonify({
             "filename": filename,
@@ -168,46 +156,6 @@ def upload_file():
         return jsonify({
             "error": f"Ошибка загрузки файла: {str(e)}"
         }), 500
-
-@app.route('/clear-history', methods=['POST'])
-def clear_history():
-    config = load_cfg()
-    config['videos'] = []
-    save_cfg(config)
-    return jsonify({
-        "success": True,
-        "message": "История очищена"
-    })
-
-@app.route('/delete-video', methods=['POST'])
-def delete_video():
-    data = request.json
-    path = data.get("path")
-
-    if not path:
-        return jsonify({
-            "error": "Не указан путь к видео"
-        }), 400
-    
-    cfg = load_cfg()
-
-    try:
-        if os.path.exists(path):
-            os.remove(path)
-    except Exception as e:
-        return jsonify({
-            "error": f"Не удалось удалить файл: {str(e)}"
-        }), 500
-    
-    cfg["videos"] = [
-        v for v in cfg.get("videos", []) if v["path"] != path
-    ]
-    save_cfg(cfg)
-
-    return jsonify({
-        "success": True, "message":
-        "Видео удалено"
-    })
 
 @app.route('/output/<path:filename>')
 def download_file(filename):

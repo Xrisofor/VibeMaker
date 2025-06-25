@@ -1,14 +1,12 @@
 import os, subprocess, json, mod, uuid
 from PIL import Image, ImageFilter, ImageEnhance
 from style import apply_style
+from flask import current_app
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMP_DIR = os.path.join(BASE_DIR, "temp")
 
 FFMPEG_PATH = os.path.join(BASE_DIR, "ffmpeg", "ffmpeg.exe")
 FFPROBE_PATH = os.path.join(BASE_DIR, "ffmpeg", "ffprobe.exe")
-
-os.makedirs(TEMP_DIR, exist_ok=True)
 
 def crop_and_resize(img_path, size=(1080, 1080)):
     with Image.open(img_path) as img:
@@ -28,7 +26,7 @@ def crop_and_resize(img_path, size=(1080, 1080)):
         ).resize(size)
 
         filename = os.path.splitext(os.path.basename(img_path))[0]
-        path = os.path.join(TEMP_DIR, f"{filename}.jpg")
+        path = os.path.join(current_app.config["TEMP_FOLDER"], f"{filename}.jpg")
         img.save(path)
         return path
     
@@ -54,7 +52,7 @@ def create_blur_bg(img_path):
         bg = ImageEnhance.Brightness(bg).enhance(0.7)
 
         filename = os.path.splitext(os.path.basename(img_path))[0]
-        path = os.path.join(TEMP_DIR, f"{filename}_bg.jpg")
+        path = os.path.join(current_app.config["TEMP_FOLDER"], f"{filename}_bg.jpg")
         bg.save(path)
         return path
     
@@ -70,7 +68,7 @@ def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", vid_style
             img, vid_type, vid_style
         )
 
-        processed_path = os.path.join(TEMP_DIR, f"processed_{uuid.uuid4().hex}.jpg")
+        processed_path = os.path.join(current_app.config["TEMP_FOLDER"], f"processed_{uuid.uuid4().hex}.jpg")
         img.save(processed_path)
 
     match vid_type:
@@ -102,7 +100,7 @@ def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", vid_style
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if os.path.exists(processed_path):
-        os.remove(processed_path)
+        os.remove(processed_path)  
 
     if result.returncode != 0:
         error = result.stderr.decode("utf-8") if result.stderr else "Неизвестная ошибка"

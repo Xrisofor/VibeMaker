@@ -10,7 +10,7 @@ function fetchMods() {
     .then(res => res.json())
     .then(data => {
         const container = document.getElementById("mods-container");
-        container.innerHTML = ""; // очищаем
+        container.innerHTML = "";
 
         if (!data.mods || data.mods.length === 0) {
             container.innerHTML = "<p>Нет доступных модов.</p>";
@@ -21,7 +21,6 @@ function fetchMods() {
             const modBlock = document.createElement("div");
             modBlock.classList.add("mod-block");
 
-            // Важно: добавляем атрибут с системным именем мода
             modBlock.setAttribute("data-mod-name", mod.name);
 
             const title = document.createElement("div");
@@ -68,16 +67,13 @@ function fetchMods() {
                     paramBlock.appendChild(input);
 
                 } else if (param.type === "file") {
-                    // Контейнер для загрузки файла
                     const fileContainer = document.createElement("div");
                     fileContainer.classList.add("mod-file-upload");
                     
-                    // Кнопка для выбора файла
                     const fileBtn = document.createElement("button");
                     fileBtn.classList.add("mod-file-btn");
                     fileBtn.innerHTML = `<i class="fas fa-upload"></i> Выбрать файл`;
                     
-                    // Скрытый инпут
                     const fileInput = document.createElement("input");
                     fileInput.type = "file";
                     fileInput.accept = param.accept || "*/*";
@@ -88,7 +84,6 @@ function fetchMods() {
                     fileInfo.classList.add("mod-file-info");
                     fileInfo.innerHTML = `<i class="fas fa-info-circle"></i> Файл не выбран`;
                     
-                    // Отображение имени файла
                     const fileName = document.createElement("span");
                     fileName.classList.add("mod-file-name");
                     
@@ -151,12 +146,10 @@ function collectMods() {
 
             let value;
             if (input.type === "file") {
-                // Для file input берем путь из data-upload-path (если есть)
                 value = input.getAttribute('data-upload-path') || "";
             } else {
                 value = input.value;
 
-                // Попытка привести к числу если возможно
                 if (!isNaN(value) && value.trim() !== "") {
                     value = value.includes('.') ? parseFloat(value) : parseInt(value, 10);
                 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 ProVideo Editor</title>
+    <title>VibeMaker</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,7 @@
     <header class="app-header">
         <div class="logo-container">
             <i class="fas fa-film logo-icon"></i>
-            <h1 class="logo-text">ProVideo Editor</h1>
+            <h1 class="logo-text">VibeMaker</h1>
         </div>
         <div class="header-controls">
             <button id="theme-toggle" class="theme-btn">
@@ -130,42 +130,6 @@
                     <div class="upload-footer">
                         <p>Поддерживаемые форматы: MP3, WAV</p>
                     </div>
-                </div>
-            </div>
-            
-            <div class="history-section">
-                <div class="history-header">
-                    <h3><i class="fas fa-history"></i> История генераций</h3>
-                    <button id="clear-history" class="clear-history-btn">
-                        <i class="fas fa-trash"></i> Очистить
-                    </button>
-                </div>
-                
-                <div class="history-list" id="history-list">
-                    {% for video in videos %}
-                    <div class="history-item" data-path="{{ video.path }}">
-                        <div class="video-info">
-                            <div class="video-name">{{ video.name }}</div>
-                            <div class="video-date">{{ video.date }}</div>
-                            <div class="video-path">{{ video.path }}</div>
-                        </div>
-                        <div class="video-actions">
-                            {% if video.exists %}
-                            <button class="action-btn download-btn" title="Скачать">
-                                <i class="fas fa-download"></i>
-                            </button>
-                            {% endif %}
-                            <button class="action-btn delete-btn" title="Удалить">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="empty-history">
-                        <i class="fas fa-info-circle"></i>
-                        <p>Нет сохраненных видео</p>
-                    </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
