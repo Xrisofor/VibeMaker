@@ -100,6 +100,12 @@ function renderSelectedMods() {
         });
     });
 
+    container.querySelectorAll("select").forEach(select => {
+        select.addEventListener("change", () => {
+            updateModParams(select);
+        });
+    });
+
     container.querySelectorAll("input[type='range']").forEach(rangeInput => {
         const valueSpan = rangeInput.nextElementSibling;
         if (valueSpan && valueSpan.tagName === "SPAN") {
@@ -108,6 +114,52 @@ function renderSelectedMods() {
                 valueSpan.textContent = rangeInput.value;
             });
         }
+    });
+
+    container.querySelectorAll("button.modal-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            const [_, modName, paramName] = button.id.split("-");
+
+            const modIndex = selectedMods.findIndex(m => m.name === modName);
+
+            fetch(`/mods/${modName}/${paramName}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    params: selectedMods[modIndex]?.params || {}
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    notify(data.error, 'error');
+                    return;
+                }
+                notify(data.message);
+
+                if (data.new_value !== undefined) {
+                    const paramToUpdate = data.update_param || paramName;
+
+                    selectedMods[modIndex].params[paramToUpdate] = data.new_value;
+
+                    const input = document.getElementById(`mod-${modName}-${paramToUpdate}`);
+                    if (input) {
+                        input.value = data.new_value;
+                        if (input.type === 'range') {
+                            const valueSpan = input.nextElementSibling;
+                            if (valueSpan && valueSpan.tagName === 'SPAN') {
+                                valueSpan.textContent = data.new_value;
+                            }
+                        }
+                    }
+                }
+
+                updatePreview();
+            })
+            .catch(err => {
+                notify(`Ошибка при вызове кнопки: ${err}`, 'error');
+            });
+        });
     });
 
     container.querySelectorAll(".mod-file-btn").forEach(btn => {
@@ -178,6 +230,28 @@ function generateParamHTML(modName, param, currentValue) {
                        class="settings-input">
             </div>
         `;
+    } else if (param.type === "dropdown") {
+        return `
+            <div class="mod-param">
+                <label for="${paramId}">${param.label}</label>
+                <select id="${paramId}" class="settings-input">
+                    ${param.options.map(option => `
+                        <option value="${option.value}" ${option.value === currentValue ? "selected" : ""}>
+                            ${option.label}
+                        </option>
+                    `).join("")}
+                </select>
+            </div>
+    `;
+    } else if (param.type === "button") {
+        return `
+            <div class="mod-param">
+                <button id="${paramId}" class="modal-btn">
+                    ${param.icon ? `<i class="fas ${param.icon}"></i>` : ""}
+                    ${param.label}
+                </button>
+            </div>
+    `;
     } else if (param.type === "file") {
         return `
             <div class="mod-param">
@@ -246,19 +320,30 @@ function initModsUI() {
     document.getElementById("apply-mods").addEventListener("click", () => {
         const selectedItems = document.querySelectorAll(".mod-item.selected");
 
+        const oldSelectedMods = [...selectedMods];
+
         selectedMods = [];
+
         selectedItems.forEach(item => {
             const modName = item.dataset.modName;
             const mod = availableMods.find(m => m.name === modName);
             if (mod) {
-                const defaultParams = {};
+                const oldMod = oldSelectedMods.find(m => m.name === modName);
+                const oldParams = oldMod ? oldMod.params : null;
+
+                const paramsToUse = {};
+
                 mod.params.forEach(param => {
-                    defaultParams[param.name] = param.default;
+                    if (oldParams && param.name in oldParams) {
+                        paramsToUse[param.name] = oldParams[param.name];
+                    } else {
+                        paramsToUse[param.name] = param.default;
+                    }
                 });
 
                 selectedMods.push({
                     name: mod.name,
-                    params: defaultParams
+                    params: paramsToUse
                 });
             }
         });

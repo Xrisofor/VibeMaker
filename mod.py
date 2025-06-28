@@ -1,4 +1,4 @@
-import importlib.util, os, glob
+import importlib.util, os, glob, inspect
 from PIL import Image
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -42,7 +42,12 @@ def apply_mods(image, mods_cfg):
         else:
             mod_module = cache[mod_name]
 
-        result_img = mod_module.apply(image, **mod_params)
+        sig = inspect.signature(mod_module.apply)
+        allowed_params = sig.parameters.keys()
+
+        filtered_params = {k: v for k, v in mod_params.items() if k in allowed_params}
+
+        result_img = mod_module.apply(image, **filtered_params)
         if not isinstance(result_img, Image.Image):
             raise TypeError(f"Мод '{mod_name}' должен возвращать объект PIL.Image.Image")
         image = result_img

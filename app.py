@@ -1,7 +1,6 @@
-import os, uuid, json, mod
+import os, uuid, mod, importlib.util
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from video_gen import generate_video, crop_and_resize_for_style
-from datetime import datetime
 
 app = Flask(__name__)
 
@@ -62,14 +61,6 @@ def generate():
             data['video_style'],
             mods_cfg
         )
-        
-        date_str = datetime.now().strftime("%d.%m.%Y %H:%M")
-        video_data = {
-            "name": f"{video_name}.mp4",
-            "date": date_str,
-            "path": f"{video_name}.mp4",
-            "exists": True
-        }
         
         return jsonify({
             "success": True,
@@ -167,6 +158,30 @@ def download_file(filename):
 def get_all_mods():
     mods = mod.get_mods()
     return jsonify({"mods": mods})
+
+@app.route("/mods/<mod_name>/<button_name>", methods=["POST"])
+def mod_button_action(mod_name, button_name):
+    try:
+        mod_path = os.path.join(mod.MODS_DIR, f"{mod_name}.py")
+        if not os.path.exists(mod_path):
+            return jsonify({"error": "Мод не найден"}), 404
+
+        spec = importlib.util.spec_from_file_location(mod_name, mod_path)
+        mod_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod_module)
+
+        if not hasattr(mod_module, "on_button_click"):
+            return jsonify({"error": "Мод не поддерживает кнопки"}), 400
+
+        params = request.json.get("params", {})
+        response = mod_module.on_button_click(button_name, params)
+
+        if isinstance(response, dict):
+            return jsonify(response)
+        else:
+            return jsonify({"message": response or "Успешно"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
