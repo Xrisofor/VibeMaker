@@ -3,6 +3,7 @@ from PIL import Image, ImageEnhance
 metadata = {
     "name": "darken",
     "label": "Потемнение",
+    "description": "Уменьшение яркости изображения.",
     "params": [
         {
             "name": "enhance",

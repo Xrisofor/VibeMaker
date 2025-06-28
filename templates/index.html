@@ -46,6 +46,15 @@
                         </td>
                     </tr>
                     <tr>
+                        <td>Стиль:</td>
+                        <td>
+                            <select id="style-resize" class="settings-select">
+                                <option value="default">По умолчанию</option>
+                                <option value="fullscreen">Полный экран</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td>Стиль оформления:</td>
                         <td>
                             <select id="video-style" class="settings-select">
@@ -64,12 +73,33 @@
                 </table>
             </div>
 
+
             <div class="settings-group" id="mods-group">
                 <div class="settings-title">
-                    <i class="fas fa-puzzle-piece"></i> Моды
+                    <i class="fas fa-puzzle-piece"></i> Эффекты
                 </div>
-                <div id="mods-container">
-                    <p>Загрузка модов...</p>
+                
+                <div id="selected-mods" class="selected-mods">
+                    <p id="no-mods-message">Эффекты не выбраны</p>
+                </div>
+                
+                <button id="add-mod-btn" class="add-mod-btn">
+                    <i class="fas fa-plus-circle"></i> Добавить эффект
+                </button>
+            </div>
+
+            <div id="mods-modal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-puzzle-piece"></i> Доступные эффекты</h3>
+                        <span class="close-modal">&times;</span>
+                    </div>
+                    <div class="modal-body" id="available-mods">
+                        <!-- Список эффектов будет загружаться сюда -->
+                    </div>
+                    <div class="modal-footer">
+                        <button id="apply-mods" class="modal-btn">Применить</button>
+                    </div>
                 </div>
             </div>
             

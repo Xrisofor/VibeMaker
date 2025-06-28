@@ -3,6 +3,7 @@ from PIL import Image
 metadata = {
     "name": "rotate",
     "label": "Поворот изображения",
+    "description": "Поворот изображения на заданный угол.",
     "params": [
         {"name": "angle", "type": "slider", "label": "Угол (°)", "min": -180, "max": 180, "default": 0}
     ]

@@ -1,6 +1,6 @@
 import os, uuid, json, mod
 from flask import Flask, request, jsonify, send_from_directory, render_template
-from video_gen import generate_video, crop_and_resize
+from video_gen import generate_video, crop_and_resize_for_style
 from datetime import datetime
 
 app = Flask(__name__)
@@ -58,6 +58,7 @@ def generate():
             data['audio'],
             output_path,
             data['video_type'],
+            data['style_resize'],
             data['video_style'],
             mods_cfg
         )
@@ -87,6 +88,7 @@ def preview():
     data = request.json
     img_path = data.get('image_path')
     vid_type = data.get('video_type', 'YouTube')
+    res_type = data.get('style_resize', 'default')
     vid_style = data.get('video_style', 'black')
     mods_cfg = data.get('mods', None)
 
@@ -96,7 +98,7 @@ def preview():
         }), 400
     
     try:
-        main_img = crop_and_resize(img_path)
+        main_img = crop_and_resize_for_style(img_path, res_type)
 
         with Image.open(main_img) as img:
             img = mod.apply_mods(img, mods_cfg)
@@ -106,11 +108,11 @@ def preview():
             )
 
             buf = io.BytesIO()
-            img.save(buf, format="JPEG")
+            img.save(buf, format="PNG")
             encoded = base64.b64encode(buf.getvalue()).decode("utf-8")
 
             return jsonify({
-                "preview": f"data:image/jpeg;base64,{encoded}"
+                "preview": f"data:image/png;base64,{encoded}"
             })
     except Exception as e:
         return jsonify({

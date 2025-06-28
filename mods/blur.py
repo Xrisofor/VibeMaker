@@ -3,6 +3,7 @@ from PIL import Image, ImageFilter
 metadata = {
     "name": "blur",
     "label": "Размытие",
+    "description": "Размытие изображения с заданным радиусом.",
     "params": [
         {
             "name": "radius",

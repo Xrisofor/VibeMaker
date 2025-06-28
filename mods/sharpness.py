@@ -3,6 +3,7 @@ from PIL import Image, ImageEnhance
 metadata = {
     "name": "sharpness",
     "label": "Резкость",
+    "description": "Настройка резкости изображения.",
     "params": [
         {
             "name": "amount",

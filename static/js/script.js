@@ -61,6 +61,7 @@ function updatePreview() {
         body: JSON.stringify({
             image_path: selectedImage,
             video_type: UI.videoType.value,
+            style_resize: UI.styleResize.value,
             video_style: UI.videoStyle.value,
             mods: mods
         })
@@ -93,6 +94,7 @@ function generateVideo() {
             audio: selectedAudio,
             video_name: UI.videoName.value.trim(),
             video_type: UI.videoType.value,
+            style_resize: UI.styleResize.value,
             video_style: UI.videoStyle.value,
             save_folder: UI.folderPath?.value ?? 'output',
             mods: mods
@@ -141,6 +143,7 @@ function toggleGenerateBtn(loading) {
 document.addEventListener('DOMContentLoaded', () => {
     UI.videoType = $('video-type');
     UI.videoStyle = $('video-style');
+    UI.styleResize = $('style-resize');
     UI.videoName = $('video-name');
     UI.folderPath = $('folder-path');
     UI.generateBtn = $('generate-btn');
@@ -189,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     refreshBtn.addEventListener('click', updatePreview);
 
-    UI.videoType.onchange = UI.videoStyle.onchange = updatePreview;
+    UI.videoType.onchange = UI.videoStyle.onchange = UI.styleResize.onchange = updatePreview;
     UI.imageUploadBtn.onclick = () => UI.imageInput.click();
     UI.audioUploadBtn.onclick = () => UI.audioInput.click();
 

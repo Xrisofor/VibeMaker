@@ -4,6 +4,7 @@ from PIL import Image
 metadata = {
     "name": "noise",
     "label": "Шум",
+    "description": "Добавление шума к изображению с заданной интенсивностью.",
     "params": [
         {"name": "intensity", "type": "slider", "label": "Интенсивность", "min": 0, "max": 100, "default": 0}
     ]

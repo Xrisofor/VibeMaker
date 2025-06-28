@@ -30,6 +30,13 @@ def crop_and_resize(img_path, size=(1080, 1080)):
         img.save(path)
         return path
     
+def crop_and_resize_for_style(img_path, style = "default", size=(1080, 1080)):
+    match style:
+        case "fullscreen":
+            return img_path
+        case _:
+            return crop_and_resize(img_path, size)
+    
 def get_audio_duration(path):
     result = subprocess.run([
         FFPROBE_PATH, '-v', 'error',
@@ -56,8 +63,8 @@ def create_blur_bg(img_path):
         bg.save(path)
         return path
     
-def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", vid_style = "black", mods_cfg = None):
-    main_img = crop_and_resize(img_path)
+def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", res_type = "default", vid_style = "black", mods_cfg = None):
+    main_img = crop_and_resize_for_style(img_path, res_type)
     duration = get_audio_duration(aud_path)
 
     with Image.open(main_img) as img:
@@ -69,7 +76,7 @@ def generate_video(img_path, aud_path, out_path, vid_type = "YouTube", vid_style
         )
 
         processed_path = os.path.join(current_app.config["TEMP_FOLDER"], f"processed_{uuid.uuid4().hex}.jpg")
-        img.save(processed_path)
+        img.save(processed_path, format="PNG")
 
     match vid_type:
         case "YouTube":

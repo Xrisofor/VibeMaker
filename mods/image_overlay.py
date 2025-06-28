@@ -3,6 +3,7 @@ from PIL import Image
 metadata = {
     "name": "image_overlay",
     "label": "Наложение изображения",
+    "description": "Наложение одного изображения на другое с возможностью настройки позиции и масштаба.",
     "params": [
         {"name": "overlay_path", "type": "file", "label": "Загрузить изображение", "default": ""},
         {"name": "x", "type": "slider", "label": "X", "min": -1, "max": 1080, "default": -1},
