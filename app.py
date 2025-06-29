@@ -130,13 +130,14 @@ def upload_file():
         if type == "image":
             from PIL import Image
             with Image.open(file_path) as img:
-                _, h = img.size
+                img = img.convert("RGB")
+                w, h = img.size
 
             if h < 1080:
-                os.remove(file_path)
-                return jsonify({
-                    "error": "Высота изображения должна быть не менее 1080px"
-                }), 400
+                scale = 1080 / h
+                new_size = (int(w * scale), 1080)
+                img = img.resize(new_size, resample=Image.LANCZOS)
+                img.save(file_path)
                 
         return jsonify({
             "filename": filename,
