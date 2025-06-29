@@ -100,6 +100,16 @@ function renderSelectedMods() {
         });
     });
 
+    container.querySelectorAll("input[type='color']").forEach(colorInput => {
+        const valueDisplay = colorInput.nextElementSibling;
+        if (valueDisplay && valueDisplay.classList.contains("color-value-display")) {
+            colorInput.addEventListener("input", () => {
+                valueDisplay.textContent = colorInput.value;
+                updateModParams(colorInput);
+            });
+        }
+    });
+
     container.querySelectorAll("input[type='checkbox']").forEach(input => {
         input.addEventListener("change", () => {
             updateModParams(input);
@@ -236,6 +246,18 @@ function generateParamHTML(modName, param, currentValue) {
                 <input type="text" id="${paramId}" 
                        value="${currentValue}" 
                        class="settings-input">
+            </div>
+        `;
+    } else if (param.type === "color") {
+        return `
+            <div class="mod-param">
+                <label for="${paramId}">${param.label}</label>
+                <div class="color-input-container">
+                    <input type="color" id="${paramId}" 
+                        value="${currentValue}" 
+                        class="color-input">
+                    <span class="color-value-display">${currentValue}</span>
+                </div>
             </div>
         `;
     } else if (param.type === "dropdown") {

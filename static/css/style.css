@@ -1115,3 +1115,48 @@ body {
 [data-theme="dark"] .mod-param .checkmark {
     background-color: var(--card-bg);
 }
+
+/* Стили для цветового выбора */
+.mod-param .color-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mod-param .color-input {
+    width: 50px;
+    height: 30px;
+    border: none;
+    border-radius: 4px;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    overflow: hidden;
+}
+
+.mod-param .color-input::-webkit-color-swatch {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mod-param .color-input::-moz-color-swatch {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mod-param .color-value-display {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 4px 8px;
+    min-width: 70px;
+}
+
+.mod-param .color-input:hover + .color-value-display {
+    border-color: var(--primary-color);
+}

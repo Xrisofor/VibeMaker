@@ -68,7 +68,7 @@ if exist "requirements.txt" (
 echo.
 echo === Запуск приложения ===
 echo [%DATE% %TIME%] STARTING APPLICATION >> "%LOG_FILE%"
-python -X utf8 app.py >> "%LOG_FILE%" 2>&1
+python -X utf8 app.py
 
 if errorlevel 1 (
     echo ОШИБКА: Приложение завершилось с кодом %errorlevel%
