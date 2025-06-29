@@ -17,7 +17,7 @@ metadata = {
         {
             "name": "regenerate_noise",
             "type": "button",
-            "label": "Перегенерировать шум",
+            "label": "Рандомный шум",
             "icon": "fa-refresh"
         }
     ]

@@ -5,7 +5,7 @@ metadata = {
     "label": "Наложение изображения",
     "description": "Наложение одного изображения на другое с возможностью настройки позиции и масштаба.",
     "params": [
-        {"name": "overlay_path", "type": "file", "label": "Загрузить изображение", "default": ""},
+        {"name": "overlay_path", "type": "file", "label": "Загрузить изображение", "accept": "image/*"},
         {"name": "x", "type": "slider", "label": "X", "min": -1, "max": 1080, "default": -1},
         {"name": "y", "type": "slider", "label": "Y", "min": -1, "max": 1080, "default": -1},
         {"name": "scale", "type": "slider", "label": "Масштаб (%)", "min": 10, "max": 200, "default": 100}

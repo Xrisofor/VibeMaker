@@ -100,6 +100,12 @@ function renderSelectedMods() {
         });
     });
 
+    container.querySelectorAll("input[type='checkbox']").forEach(input => {
+        input.addEventListener("change", () => {
+            updateModParams(input);
+        });
+    });
+
     container.querySelectorAll("select").forEach(select => {
         select.addEventListener("change", () => {
             updateModParams(select);
@@ -211,12 +217,14 @@ function generateParamHTML(modName, param, currentValue) {
     const paramId = `mod-${modName}-${param.name}`;
 
     if (param.type === "slider") {
+        const step = param.step !== undefined ? `step="${param.step}"` : '';
         return `
             <div class="mod-param">
                 <label for="${paramId}">${param.label}</label>
                 <input type="range" id="${paramId}" 
                        min="${param.min}" max="${param.max}" 
                        value="${currentValue}" 
+                       ${step}
                        class="settings-range">
                 <span>${currentValue}</span>
             </div>
@@ -252,6 +260,16 @@ function generateParamHTML(modName, param, currentValue) {
                 </button>
             </div>
     `;
+    } else if (param.type === "checkbox") {
+        return `
+            <div class="mod-param">
+                <label class="checkbox-container" for="${paramId}">
+                    ${param.label}
+                    <input type="checkbox" id="${paramId}" ${currentValue ? "checked" : ""}>
+                    <span class="checkmark"></span>
+                </label>
+            </div>
+        `;
     } else if (param.type === "file") {
         return `
             <div class="mod-param">
@@ -288,7 +306,10 @@ function updateModParams(input) {
     }
 
     let value;
-    if (input.type === "file") {
+
+    if (input.type === "checkbox") {
+        value = input.checked;
+    } else if (input.type === "file") {
         return;
     } else {
         value = input.value;
@@ -296,7 +317,7 @@ function updateModParams(input) {
             value = value.includes('.') ? parseFloat(value) : parseInt(value, 10);
         }
     }
-
+ 
     selectedMods[modIndex].params[paramName] = value;
 }
 
