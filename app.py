@@ -5,9 +5,9 @@ from video_gen import generate_video, crop_and_resize_for_style
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
-OUTPUT_DIR = os.path.join(BASE_DIR, "output")
-TEMP_DIR = os.path.join(BASE_DIR, "temp")
+UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
+OUTPUT_DIR = os.path.join(BASE_DIR, "video")
+TEMP_DIR = os.path.join(BASE_DIR, "static", "temp")
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_DIR
 app.config['OUTPUT_FOLDER'] = OUTPUT_DIR
@@ -130,14 +130,24 @@ def upload_file():
         if type == "image":
             from PIL import Image
             with Image.open(file_path) as img:
-                img = img.convert("RGB")
-                w, h = img.size
+                # if img.mode != "RGB":
+                #     img = img.convert("RGB")
+
+                _, h = img.size
+                # w, h = img.size
+
+                # if h < 1080:
+                #     scale = 1080 / h
+                #     new_size = (int(w * scale), 1080)
+                #     img = img.resize(new_size, resample=Image.LANCZOS)
+
+                # img.save(file_path)
 
             if h < 1080:
-                scale = 1080 / h
-                new_size = (int(w * scale), 1080)
-                img = img.resize(new_size, resample=Image.LANCZOS)
-                img.save(file_path)
+                os.remove(file_path)
+                return jsonify({
+                    "error": "Высота изображения должна быть не менее 1080px"
+                }), 400
                 
         return jsonify({
             "filename": filename,
