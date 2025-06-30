@@ -8,6 +8,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, "static", "uploads")
 OUTPUT_DIR = os.path.join(BASE_DIR, "video")
 TEMP_DIR = os.path.join(BASE_DIR, "static", "temp")
+# CONFIG_FILE = os.path.join(BASE_DIR, "config.py")
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_DIR
 app.config['OUTPUT_FOLDER'] = OUTPUT_DIR

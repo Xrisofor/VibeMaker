@@ -88,6 +88,17 @@
                 </button>
             </div>
 
+            <div class="project-controls">
+                <button id="save-project" class="project-btn">
+                    <i class="fas fa-save"></i> Сохранить проект
+                </button>
+                <button id="load-project" class="project-btn">
+                    <i class="fas fa-folder-open"></i> Загрузить проект
+                </button>
+            </div>
+
+            <input type="file" id="project-file" accept=".json" style="display: none;">
+
             <div id="mods-modal" class="modal">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -105,6 +116,10 @@
             
             <button id="generate-btn" class="generate-btn">
                 <i class="fas fa-play-circle"></i> Сгенерировать видео
+            </button>
+
+            <button id="download-btn" class="generate-btn">
+                <i class="fas fa-download"></i> Скачать изображение
             </button>
         </div>
         
